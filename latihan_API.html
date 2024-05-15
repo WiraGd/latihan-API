@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Latihan API JS</title>
+    <style>
+      select {
+        width: 300px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Kota Wilayah Indonesia</h1>
+    <form>
+      <label for="select_provinsi">Pilih Provinsi:</label>
+      <select id="select_provinsi">
+        <option value="">Pilih Provinsi</option>
+      </select>
+    </form>
+    <form action="">
+      <label for="select_kota">Pilih Kota:</label>
+      <select name="" id="select_kota">
+        <option value="">Pilih Kota</option>
+      </select>
+    </form>
+    <script>
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', 'https://api.goapi.io/regional/provinsi?api_key=44ed8f2e-ad96-5c14-e78e-508020d3');
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          var response = JSON.parse(xhr.responseText);
+          const province = response.data;
+          const selectProvinsi = document.getElementById('select_provinsi');
+
+          province.forEach((provinsi) => {
+            const option = document.createElement('option');
+            option.value = provinsi.id;
+            option.textContent = provinsi.name;
+            selectProvinsi.appendChild(option);
+          });
+          console.log(province);
+        }
+      };
+      xhr.send();
+
+      document.getElementById('select_provinsi').addEventListener('change', function () {
+        var xhrKota = new XMLHttpRequest();
+        var provinsiId = this.value;
+        var url = 'https://api.goapi.io/regional/provinsi_id=' + provinsiId + '&api_key=44ed8f2e-ad96-5c14-e78e-508020d3';
+
+        xhrKota.open('GET', url);
+        xhrKota.onreadystatechange = function () {
+          if (xhrKota.readyState === 4 && xhrKota.status === 200) {
+            var response = JSON.parse(xhrKota.responseText);
+            const kotas = response.data;
+            const selectKota = document.getElementById('select_kota');
+
+            // Bersihkan pilihan sebelumnya jika ada
+            selectKota.innerHTML = '<option value="">Pilih Kota</option>';
+
+            kotas.forEach((kota) => {
+              const option = document.createElement('option');
+              option.value = kota.id;
+              option.textContent = kota.name;
+              selectKota.appendChild(option);
+            });
+            console.log(kotas);
+          }
+        };
+        xhrKota.send();
+      });
+    </script>
+  </body>
+</html>
